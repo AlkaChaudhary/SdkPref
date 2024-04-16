@@ -1,0 +1,140 @@
+(partial) SdkPerf Commands List
+===============================
+
+Help!
+-h
+
+Help More!!
+-hm
+
+Help w/Examples!
+-he
+
+Your friend:
+sdkperf -hm | grep -i keyword
+
+Purpose(s) of SdkPerf
+ - It's a Solace test tool!  Used extensively by both our customers, our field staff (POCs, testing), and our QA department
+ - Command-line app, wrapped around our various APIs
+ - Programming/visibility/troubleshooting (dumping messages)
+ - Load/performance testing
+ - Latency testing
+ - Comparison testing (slow app performance: baseline with API-specific SdkPerf first)
+ - 
+ 
+
+
+For command-line switches:
+Equals required with C, either space or equals with JCSMP
+
+
+Subscribing:
+============
+
+>            catch-all wildcard
+#P2P/>	     receives typically-hidden messages, such as reply-tos, SolCache communication,
+             any messages published to a queue (#P2P/QUE/... or #P2P/QTMP/...)
+So, >,#P2P/> sees everything
+
+When using Event Mesh (DMR) subscribing to > can be dangerous!  Sucks in messages from other brokers!
+So use:  #noexport/>
+
+
+BASICS:
+=======
+    -cip=ip[:port]  IP and port of the client appliance. (e.g. -cip=192.168.160.101)
+
+    -cu=user[@vpn]  Client username and optionally VPN name.
+
+    -cp=password    Client password (default '')
+
+    -stl=list       List of topics for subscribing applied round robin to clients
+	
+    -md             Dump all received messages to the screen as text
+	
+    -ptl=list       List of topics for publishing. Note: This list must be
+                    either of size 1 (same topic used for all msgs) or
+                    of equal length to message parts specified (topics uniquely specified).
+
+    -mn=number      Total # messages to publish (across ALL clients). (default is 0)
+
+    -mr=number      Publishing rate (msg/sec per client) (default 1)
+
+    -msa=list       Comma sep size list in bytes for auto-generated binary attachment
+                    portion.
+		    
+    -q              Enable quiet mode.  No command line output during
+    Java-only  
+
+GUARANTEED:
+===========
+    -pql list       List of queues for publishing. Note: This list must be
+                    either of size 1 (same queue used for all msgs) or
+                    of equal length to message parts specified (queues uniquely specified).
+					
+    -sql list       List of queues for subscribing applied round robin to clients
+
+    -mt=string      Message type, one of direct|nonpersistent|persistent}.
+
+
+JMS:
+====
+    -jcf string     JMS Connection Factory (default /jms/cf/default)
+
+    -jndi           Enable JNDI topic and queue lookups.
+    
+
+INTERMEDIATE:
+=============
+    -cc=number      Number of client connections (default 1)
+
+    -pal=list       Binary attachment list.
+	
+    -qb             Enables queue browsing. Option must be used with '-sql'
+    
+    -cm=string      Client mode.  One of 'reply' or 'sink'.  Default is 'sink'.
+                    In reply, all messages are reflected by the replyTo topic is used as the destination when sending.
+
+    -prt            Publish reply topic flag. Pubs will add reply to topic in each send.  P2P by default.
+
+    -sdl list       List of durable topic endpoints (DTE) for subscribing.  If using DTEs
+                    and this param is omitted, topic names will be used as DTE names.
+
+    -tte int        Number of temporary topic endpoints to create per client.
+    -tqe int        Number of temporary queue endpoints to create per client.
+
+    -z number       Enable compression. (1..9) 1 is fastest, 9 max compression.
+        (need to connect to compressed port)
+
+
+ADVANCED:
+=========
+    -apw=int        Set the publisher ack window size.  Valid range is 1 - 255
+	
+    -ptp string     Publish topic prefix. Use with -ptc to generate a large topic list.
+    -ptc int        Publish topic count. Use with -ptp to generate a large topic list.
+
+    -epl list       Comma sep list of extra Props passed blindly to the API
+
+    -cpl            Custom Property List. This argument can be used to add custom Properties on messages being published.
+    JCSMP-only      Usage: -cpl=type,name,value (e.g. -cpl=Boolean,PropName,true or -cpl=Int,prop1,1,Long,prop2,92).
+                    Accepted types are: String, Boolean {true, false}, Double, Float, Int, Long, Short
+
+    -cm=string      Client mode.  One of 'reflect', 'reply' or 'sink'.  Default is 'sink'.  In reflect
+                    all messages received will be published to the ptl topic.  Do not use with publishing request.
+                    In reply, all messages are reflected by the replyTo topic is used as the destination when sendin
+
+    -sd=int         Per subscriber per msg delay in milliseconds. Ie slow subscribers.
+                    Use -1 to stop the subscriber from responding to messages.
+                    (default 0)
+
+
+LATENCY TESTING:
+================
+    -l  flag        Enable latency measurements (default is no latency).
+
+    -lwu sec        Set latency warmup in seconds.  (default 30.0)
+    
+    -lb int         Enable latency measurement with # buckets (default 1024 buckets)
+    
+    -lg int         Latency granularity factor (default 0)
